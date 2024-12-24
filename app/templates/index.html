@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <meta property="og:title" content="API Document">
+    <meta property="og:description" content="這是一個由qiushawa架設的老人照護系統api的說明文檔">
+    <meta property="og:image" content="https://www.airltc.com/photos/new_shares/1100524-ltc-1.jpg">
+    <meta property="og:url" content="https://api.qiushawa.me/document/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <style>
+        body {
+            background-color: #202225;
+            color: #dcddde;
+            font-family: "Helvetica", "Arial", "LiHei Pro", "黑體-繁", "微軟正黑體", sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #2f3136;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .endpoint {
+            background-color: #36393f;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .endpoint-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .endpoint-method {
+            color: #fff;
+            padding: 5px 8px 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #2f3136;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+        }
+        table th, table td {
+            padding: 8px;
+            border: 1px solid #40444b;
+        }
+        table th {
+            background-color: #5865f2;
+            color: #fff;
+        }
+        table td {
+            word-wrap: break-word;
+            background-color: #2c2e32;
+        }
+        table td:first-child {
+            max-width: 10px;
+        }
+        table td:nth-child(2) {
+            max-width: 10px;
+        }
+        table td:nth-child(3) {
+            width: 80%;
+        }
+        h4 {
+            margin-top: 30px;
+        }
+
+        /* RWD adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 10px;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .endpoint-header {
+                font-size: 1rem;
+            }
+            .endpoint-method {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Resources</h2>
+        <ul class="list-unstyled">
+            {% for category, _ in api_data.items() %}
+            <li><a href="#{{ category }}" style="color: #dcddde; text-decoration: none;">{{ category }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="content">
+        <h1>歡迎來到非常好API使用說明</h1>
+        <img class="endpoint"src="https://i0.wp.com/operationrainfall.com/wp-content/uploads/2024/02/blue-archive-the-animation-hoshino.jpg?ssl=1" width="85%">
+    </div>
+    <div class="content">
+        {% for category, endpoints in api_data.items() %}
+        <h2 id="{{ category }}">{{ category }}</h2>
+        {% for endpoint, details in endpoints.items() %}
+        <div class="endpoint">
+            <h3>{{ details.title }}</h3>
+            <div class="endpoint-header">
+                <span class="endpoint-method" style="
+                    {% if details.method == 'PATCH' %}background-color: yellow;
+                    {% elif details.method == 'PUT' %}background-color: orange;
+                    {% elif details.method == 'POST' %}background-color: green;
+                    {% elif details.method == 'GET' %}background-color: blue;
+                    {% elif details.method == 'DELETE' %}background-color: red;
+                    {% endif %}
+                ">{{ details.method }}</span> {{ endpoint }}
+            </div><br>
+            <span>{{ details.description }}</span>
+            <h4>Parameters</h4>
+            <table> 
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for param, param_details in details.params.items() %}
+                    <tr>
+                        <td>{{ param }}</td>
+                        <td>{{ param_details.type }}</td>
+                        <td>{{ param_details.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if details.request.body and details.request.body != {} %}
+            <h4>Request Body</h4>
+            <pre><code class="language-json">{{ details.request.body | tojson(indent=4) }}</code></pre>
+            {% endif %}
+            <h4>Response</h4>
+            <pre><code class="language-json">{{ details.response | tojson(indent=4) }}</code></pre>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
