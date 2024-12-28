@@ -91,3 +91,25 @@ userHealth = Docs(
         },
     },
 )
+
+device_status_get = Docs(
+    title="取得裝置狀態",
+    description="回傳裝置的狀態，包含是否被穿戴",
+    example_response={
+        "success": True,
+        "data": {
+            "status": True,
+        },
+    },
+)
+
+device_status_post = Docs(
+    title="更新裝置狀態",
+    description="更新裝置的狀態，包含是否被穿戴",
+    example_response={
+        "success": True,
+        "data": {
+            "status": True,
+        },
+    },
+)

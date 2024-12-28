@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Oxygen Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            height: 400px;  /* 設定固定高度 */
+        }
+        #oxygenChart {
+            height: 800px;  /* 設定圖表的高度 */
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <input type="text" id="test" placeholder="Enter user ID">
+        <input type="submit" id="submit" value="Submit">
+        <div class="chart-container">
+            <canvas id="oxygenChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("submit").addEventListener("click", function () {
+            const request = new XMLHttpRequest();
+            const test = document.getElementById("test").value;
+            const container = document.querySelector(".app");
+
+            // 檢查是否有輸入值
+            if (!test) {
+                alert("Please enter a user ID.");
+                return;
+            }
+
+            // 配置 AJAX 請求
+            const url = new URL("http://localhost:3000/api/v1/users/");
+            url.pathname += test;
+
+            request.open("GET", url.toString(), true);
+
+            request.onload = function () {
+                if (request.status >= 200 && request.status < 400) {
+                    const response = request.responseText;
+                    const json = JSON.parse(response);
+                    const user = json.data;
+
+                    // 檢查是否有血氧數據
+                    if (user.health && user.health.blood_oxygen) {
+                        const bloodOxygenData = user.health.blood_oxygen;
+                        const limitedData = bloodOxygenData.slice(-10);
+
+                        // 將血氧數據轉換為圖表數據
+                        const labels = limitedData.map((entry, index) => `第 ${index + 1}資料`);
+                        const values = limitedData.map((entry) => entry.value);
+
+                        // 使用 Chart.js 繪製圖表
+                        const ctx = document.getElementById("oxygenChart").getContext("2d");
+
+                        // 如果圖表已存在，銷毀以避免重複繪製
+                        if (window.oxygenChartInstance) {
+                            window.oxygenChartInstance.destroy();
+                        }
+
+                        window.oxygenChartInstance = new Chart(ctx, {
+                            type: "line", // 折線圖
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: "Blood Oxygen Levels",
+                                    data: values,
+                                    borderColor: "rgba(75, 192, 192, 1)",
+                                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                    borderWidth: 2,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: "top",
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: "資料",
+                                        },
+                                        ticks: {
+                                            autoSkip: true,  // 自動跳過某些標籤，避免重疊
+                                            maxTicksLimit: 20,  // 設置最多顯示的標籤數量
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: "Oxygen Level (%)",
+                                        },
+                                        //beginAtZero: true, //這是在Y軸區間從0到資料的最大值
+                                    },
+                                },
+                            },
+                        });
+                    } else {
+                        alert("No blood oxygen data found.");
+                    }
+                } else {
+                    console.log("Error: Unable to fetch data.");
+                }
+            };
+
+            request.onerror = function () {
+                console.log("Error: Network issue.");
+            };
+
+            request.send();
+        });
+    </script>
+</body>
+</html>

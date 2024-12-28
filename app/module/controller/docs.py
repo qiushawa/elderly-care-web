@@ -18,7 +18,9 @@ def api_documentation():
         },
         "Devices": {
             f"/devices{devices.register.route}":generate_route_metadata(devices.register),
-            f"/devices{devices.bind.route}":generate_route_metadata(devices.bind)
+            f"/devices{devices.bind.route}":generate_route_metadata(devices.bind),
+            f"/devices{devices.status_get.route}":generate_route_metadata(devices.status_get),
+            f"/devices{devices.status_post.route}":generate_route_metadata(devices.status_post),
         },
         "Update": {
             f"/update{update.update_data.route}":generate_route_metadata(update.update_data)

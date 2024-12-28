@@ -5,8 +5,8 @@ from app.module.const import HttpStatus
 
 from flask import Blueprint, request, jsonify
 
-from ...setting import device_register, device_bind
-from ..util.doc_generator import route_with_description, parameters
+from ...setting import device_register, device_bind, device_status_get, device_status_post
+from ..util.doc_generator import route_with_description, parameters, url_parameters
 
 bp = Blueprint("devices", __name__, url_prefix="/api/v1/devices")
 
@@ -66,4 +66,71 @@ def bind(device_id, user_id):
     construct["message"] = "Device has been binded."
     response = jsonify(construct)
     response.status_code = HttpStatus.CREATED
+    return response
+@route_with_description(
+    bp,
+    "/status",
+    ["GET"],
+    device_status_get.title,
+    device_status_get.description,
+    device_status_get.example_response,
+)
+@url_parameters("device_id", str, "裝置 ID")
+def status_get(device_id):
+    user = User.query.filter_by(device_id=device_id).first()
+    construct = {}
+    if user is None:
+        construct["success"] = False
+        construct["message"] = "此裝置尚未綁定使用者"
+        response = jsonify(construct)
+        response.status_code = HttpStatus.NOT_FOUND
+        return response
+    Device = Device.query.filter_by(device_id=device_id).first()
+    if Device is None:
+        construct["success"] = False
+        construct["message"] = "此裝置不存在"
+        response = jsonify(construct)
+        response.status_code = HttpStatus.NOT_FOUND
+        return response
+    now_status = Device.check_status()
+    if now_status == False:
+        # 使用者沒有穿戴裝置
+        construct["success"] = True
+        construct["message"] = "使用者未穿戴裝置"
+        response = jsonify(construct)
+        response.status_code = HttpStatus.OK
+        return response
+    else:
+        # 使用者穿戴裝置
+        construct["success"] = True
+        construct["message"] = "使用者已穿戴裝置"
+        response = jsonify(construct)
+        response.status_code = HttpStatus.OK
+        return response
+
+# update status
+@route_with_description(
+    bp,
+    "/status",
+    ["POST"],
+    device_status_post.title,
+    device_status_post.description,
+    device_status_post.example_response,
+)
+@parameters("device_id", str, "裝置 ID")
+@parameters("status", bool, "裝置狀態")
+def status_post(device_id, status):
+    Device = Device.query.filter_by(device_id=device_id).first()
+    construct = {}
+    if Device is None:
+        construct["success"] = False
+        construct["message"] = "此裝置不存在"
+        response = jsonify(construct)
+        response.status_code = HttpStatus.NOT_FOUND
+        return response
+    now_status = Device.update_status(status)
+    construct["success"] = True
+    construct["message"] = "裝置狀態已更新"
+    response = jsonify(construct)
+    response.status_code = HttpStatus.OK
     return response

@@ -1,4 +1,4 @@
-from app.module.models import User, HeartRateData, TemperatureData, BloodOxygenData
+from app.module.models import User, HeartRateData, TemperatureData, BloodOxygenData,Device
 from app.module.const import HttpStatus
 
 # __init__ 檔案中的 app
