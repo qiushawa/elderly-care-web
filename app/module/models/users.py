@@ -9,10 +9,10 @@ class Users(db.Model):
     sex = db.Column(db.String(255), nullable=False)
     birthday = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, name, email, sex, birthday):
+    def __init__(self, name, email, gender, birthday):
         self.name = name
         self.email = email
-        self.sex = sex
+        self.gender = gender
         if not self.check_birthday(birthday): raise ValueError('birthday format error')
         self.birthday = birthday
 
