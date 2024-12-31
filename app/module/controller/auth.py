@@ -21,7 +21,7 @@ def signup():
     new_user = Users(
         name=user_data['username'],
         email=user_data['email'],
-        sex=user_data['gender'],
+        gender=user_data['gender'],
         birthday=user_data['birthday']
     )
     new_user.save()
@@ -50,7 +50,7 @@ def login():
     session['user'] = {
         'email': user.email,
         'name': user.name,
-        'sex': user.sex,
+        'gender': user.gender,
         'birthday': user.birthday
     }
 
