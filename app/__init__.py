@@ -8,7 +8,8 @@ from flask_migrate import Migrate
 project_dir = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
 CORS(app)
-
+# 設定 session key
+app.secret_key = os.urandom(24)
 # 設定資料庫連接配置
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(os.path.join(project_dir, 'db/app.db'))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

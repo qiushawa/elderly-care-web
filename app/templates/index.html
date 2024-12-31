@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老人照護平台</title>
+    <style>
+        /* 全局樣式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #444;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #666;
+            padding: 10px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .feature {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .feature-card {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 30%;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: #444;
+        }
+
+        .feature-card p {
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #444;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>老人照護平台</h1>
+    </header>
+    <nav>
+        <a href="/">首頁</a>
+        <a href="/services">服務項目</a>
+        <a href="/about">關於我們</a>
+        <a href="/contact">聯絡我們</a>
+        {% if login_status %}
+            <a href="/logout">登出</a>
+        {% else %}
+            <a href="/login">登入</a>
+            <a href="/signup">註冊</a>
+        {% endif %}
+    </nav>
+    <div class="container">
+        {% if login_status %}
+            <div class="welcome">
+                <h2>歡迎回來, {{ user }}</h2>
+                <p>感謝您使用我們的服務。</p>
+            </div>
+        {% else %}
+            <div class="welcome">
+                <h2>歡迎來到老人照護平台</h2>
+                <p>提供最貼心的健康與生活管理服務。</p>
+            </div>
+        {% endif %}
+
+        <div class="feature">
+            <div class="feature-card">
+                <h3>健康監測</h3>
+                <p>實時監控身體狀況，提供健康建議。</p>
+            </div>
+            <div class="feature-card">
+                <h3>遠端支援</h3>
+                <p>透過務聯網技術，讓家人更安心。</p>
+            </div>
+            <div class="feature-card">
+                <h3>用戶管理</h3>
+                <p>方便的個人與家人資料管理功能。</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        &copy; 2024 老人照護平台. 版權所有.
+    </footer>
+</body>
+</html>

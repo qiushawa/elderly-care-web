@@ -1,48 +1,33 @@
-from app.module.models import user_device
 from . import db
 import bcrypt
-import time
 
+# 密碼表
+class Auth(db.Model):
+    __tablename__ = 'auth'
 
-class User(db.Model):
-    __tablename__ = 'user'
-
-    id = db.Column(db.String(10), unique=True, primary_key=True, nullable=False, default=lambda: str(int(time.time())))
-    username = db.Column(db.String(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), nullable=False)
-    devices = db.relationship(
-        'Device',
-        secondary='user_device',
-        back_populates='users',
-        lazy='dynamic'
-    )
-    def __init__(self, username, password, email):
-        self.username = username
-        self.password = self._hash_password(password)
+
+    def __init__(self, email, password):
         self.email = email
+        self.password = self._encryption(password)
 
-    def __repr__(self):
-        return f"<User Name: {self.username}, User Email: {self.email}>"
-
-    def save(self):
+    def _encryption(self, password:str) -> str:
+        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    def check_password(self, password:str) -> bool:
+        return bcrypt.checkpw(password.encode('utf-8'), self.password)
+    
+    def save(self) -> 'Auth':
         db.session.add(self)
         db.session.commit()
+        return self
 
-    def delete(self):
+    def delete(self) -> 'Auth':
         db.session.delete(self)
         db.session.commit()
-
-    @staticmethod
-    def getAll():
-        return [{'id': user.id, 'username': user.username, 'email': user.email} for user in User.query.all()]
-
-    @staticmethod
-    def _hash_password(password):
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed.decode('utf-8')
-
-    def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+        return self
     
+    def __repr__(self):
+        return f'<Auth {self.email}>'
