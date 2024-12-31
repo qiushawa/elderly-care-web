@@ -2,6 +2,8 @@
 import os
 
 from app.module.const import Docs
+from app.module.controller import *
+from app.module.util.doc_generator import generate_route_metadata
 
 HOST = "0.0.0.0"
 PORT = 5000
@@ -113,3 +115,18 @@ device_status_post = Docs(
         },
     },
 )
+docs_data={
+    "Users": {
+        f"/users{users.register.route}":generate_route_metadata(users.register),
+        f"/users{users.userData.route}":generate_route_metadata(users.userData),
+    },
+    "Devices": {
+        f"/devices{devices.register.route}":generate_route_metadata(devices.register),
+        f"/devices{devices.bind.route}":generate_route_metadata(devices.bind),
+        f"/devices{devices.status_get.route}":generate_route_metadata(devices.status_get),
+        f"/devices{devices.status_post.route}":generate_route_metadata(devices.status_post),
+    },
+    "Update": {
+        f"/update{update.update_data.route}":generate_route_metadata(update.update_data)
+    }
+}

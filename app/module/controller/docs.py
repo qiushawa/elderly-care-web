@@ -1,7 +1,7 @@
 
 
 from flask import Blueprint, render_template
-
+from ...setting import docs_data
 from app.module.util.doc_generator import generate_route_metadata
 bp = Blueprint('docs', __name__, url_prefix='/docs')
 
@@ -10,20 +10,4 @@ bp = Blueprint('docs', __name__, url_prefix='/docs')
 @bp.route('/', methods=['GET'])
 def api_documentation():
     from ..controller import users, devices, update
-    # return render_template('index.html', api_data=api_data)
-    data={
-        "Users": {
-            f"/users{users.register.route}":generate_route_metadata(users.register),
-            f"/users{users.userData.route}":generate_route_metadata(users.userData),
-        },
-        "Devices": {
-            f"/devices{devices.register.route}":generate_route_metadata(devices.register),
-            f"/devices{devices.bind.route}":generate_route_metadata(devices.bind),
-            f"/devices{devices.status_get.route}":generate_route_metadata(devices.status_get),
-            f"/devices{devices.status_post.route}":generate_route_metadata(devices.status_post),
-        },
-        "Update": {
-            f"/update{update.update_data.route}":generate_route_metadata(update.update_data)
-        }
-    }
-    return render_template('index.html', api_data=data)
+    return render_template('docs.html', api_data=docs_data)
