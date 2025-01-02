@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, session, request
+from app.module.controller.util import check_login
 from app.module.models import Auth, Users
 
 bp = Blueprint('auth', __name__, url_prefix='/')
@@ -7,7 +8,7 @@ bp = Blueprint('auth', __name__, url_prefix='/')
 @bp.route('/signup', methods=['GET'])
 def signup_page():
     if session.get('user'):
-        return render_template('index.html')
+        return redirect('/')
     return render_template('signup.html', data=None)
 
 # 處理註冊請求
@@ -37,13 +38,17 @@ def signup():
     )
     new_auth.save()
     
-    return render_template('login.html')
+    return redirect('/login')
 
 # 登入頁面
 @bp.route('/login', methods=['GET'])
 def login_page():
     if session.get('user'):
-        return render_template('index.html')
+        return redirect('/')
+    
+    next_page = request.args.get('next')
+    if next_page:
+        return render_template('login.html', next=next_page)
     return render_template('login.html')
 
 # 處理登入請求
@@ -51,7 +56,7 @@ def login_page():
 def login():
     user_data = request.form
     passwd_table = Auth.query.filter_by(email=user_data['email']).first()
-    
+    next_page = request.args.get('next')
     # 檢查帳號是否存在
     if not passwd_table:
         return render_template('login.html', error='此帳號不存在', email=user_data['email'])
@@ -67,6 +72,8 @@ def login():
         'birthday': user.birthday
     }
     
+    if next_page:
+        return redirect(next_page)
     return redirect('/')
 
 # 登出
@@ -75,4 +82,4 @@ def logout_page():
     session.pop('user', None)
     session.pop('email', None)
     session.pop('username', None)
-    return render_template('index.html')
+    return redirect('/')

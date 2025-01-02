@@ -1,5 +1,5 @@
 from app import app
-from app.module.controller import auth, home, device
+from app.module.controller import auth, devices, home
 
 # *******************************************************
 # * Register Blueprint
@@ -7,4 +7,4 @@ from app.module.controller import auth, home, device
 
 app.register_blueprint(home.bp)
 app.register_blueprint(auth.bp)
-app.register_blueprint(device.bp)
+app.register_blueprint(devices.bp)

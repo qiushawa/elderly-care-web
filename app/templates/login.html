@@ -94,7 +94,12 @@
 <body>
     <div class="login-container">
         <h2>登入</h2>
+        <!-- if next is not empty, show the message -->
+        {% if next %}
+        <form action="/login?next={{ next }}" method="post">
+        {% else %}
         <form action="/login" method="post">
+        {% endif %}
             <div class="form-group">
                 <label for="email">電子郵件:</label>
                 <input type="email" id="email" name="email" required value="{{ email }}">
@@ -106,6 +111,8 @@
             <button type="submit">登入</button>
         </form>
         <p style="color: red;">{{ error }}</p>
+        <!-- 沒有帳號嗎? 註冊一個 -->
+        <p>沒有帳號嗎? <a href="/signup">註冊一個</a></p>
     </div>
 </body>
 </html>

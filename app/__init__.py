@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -32,6 +32,24 @@ app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
 app.config["SESSION_SQLALCHEMY_TABLE"] = "session"
 Session(app)
+
+@app.errorhandler(404)
+def not_found_error(e):
+    return render_template(
+        "error.html", 
+        error_code=404, 
+        error_message="頁面未找到", 
+        previous_page=request.referrer
+    ), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template(
+        "error.html", 
+        error_code=500, 
+        error_message="伺服器內部錯誤", 
+        previous_page=request.referrer
+    ), 500
 
 # 導入模型
 from app.module.models import *

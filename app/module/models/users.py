@@ -31,5 +31,10 @@ class Users(db.Model):
         db.session.delete(self)
         db.session.commit()
     
+    # get user by email
+    @staticmethod
+    def get_user(email):
+        return Users.query.filter_by(email=email).first()
+    
     def __repr__(self):
         return f'<Users {self.name}>'

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>錯誤 {{ error_code }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: #fff;
+        }
+        :root {
+            --bg-start: #3498db; /* 預設藍色系 */
+            --bg-end: #2980b9;
+        }
+        body.error-5XX {
+            --bg-start: #e74c3c; /* 紅色系 */
+            --bg-end: #c0392b;
+        }
+        .container {
+            text-align: center;
+        }
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .error-code {
+            font-size: 60px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .button:hover {
+            background: #fff;
+            color: var(--bg-start);
+        }
+    </style>
+</head>
+<body class="error-{{ '4XX' if error_code|int < 500 else '5XX' }}">
+    <div class="container">
+        <div class="icon">😵</div> <!-- 可替換為圖片或字元 -->
+        <div class="error-code">錯誤 {{ error_code }}</div>
+        <div class="error-message">{{ error_message }}</div>
+        <!-- 返回主頁按鈕 -->
+        <a href="/" class="button">返回主頁</a>
+        <!-- 動態生成上一頁按鈕 -->
+        {% if previous_page %}
+        <a href="{{ previous_page }}" class="button">上一頁</a>
+        {% endif %}
+    </div>
+</body>
+</html>

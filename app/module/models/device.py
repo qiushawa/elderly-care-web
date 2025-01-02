@@ -23,7 +23,7 @@ class Device(db.Model):
     name = db.Column(db.String(255), nullable=False) # 裝置名稱 (使用者可自訂)
     type = db.Column(db.String(255), nullable=False) # 裝置類型 (ex: ESP32, MAX30102)
     status = db.Column(db.String(255), nullable=False) # 裝置狀態 (active, inactive)
-    owner = db.Column(db.String(255), nullable=True) # 裝置擁有者 (使用者 id)
+    owner = db.Column(db.String(255), nullable=True) # 裝置擁有者 (使用者 email)
     
     def __init__(self, id, name, type, status="inactive", owner=None):
         self.id = id

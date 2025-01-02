@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成功</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+        }
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .button:hover {
+            background: #fff;
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎉</div> <!-- 成功的圖示 -->
+        <div class="message">{{ message }}</div> <!-- 動態顯示訊息 -->
+        {% if next_page %}
+        <a href="{{ next_page }}" class="button">離開</a> <!-- 下一步按鈕 -->
+        {% endif %}
+    </div>
+</body>
+</html>
