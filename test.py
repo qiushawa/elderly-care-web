@@ -4,7 +4,7 @@ import requests
 import json
 
 def test_register_device():
-    url = "http://localhost:3000/device/register"
+    url = "https://eldercare.qiushawa.me/device/register"
     data = {
         "id": "1234567890",
         "name": "ESP32",

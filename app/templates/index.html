@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,23 +16,74 @@
         }
 
         header {
-            background-color: #444;
+            height: 75vh;
+            /* 滿一頁高 */
+            position: relative;
+            /* 為了定位 ::before */
+            background: url('{{ url_for("static", filename="images/web/banner.png") }}') no-repeat center center / cover;
+            background-attachment: fixed;
+            /* 背景固定 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: #fff;
-            padding: 10px 20px;
-            text-align: center;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            /* 確保遮罩不會超出邊界 */
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* 半透明黑色遮罩 */
+            z-index: 1;
+            /* 確保遮罩層在背景之上 */
+        }
+
+        header>* {
+            position: relative;
+            /* 確保內容位於遮罩之上 */
+            z-index: 2;
+            /* 提升內容的層級 */
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin: 0;
         }
 
         nav {
+            position: fixed;
+            /* 固定在頁面頂部 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 20px;
             display: flex;
-            justify-content: center;
-            background-color: #666;
-            padding: 10px;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            /* 平滑過渡 */
+            z-index: 999;
+            /* 保證在其他內容之上 */
+            background-color: transparent;
+            /* 初始透明背景 */
+        }
+
+        nav.scrolled {
+            background-color: rgba(0, 0, 0, 0.8);
+            /* 滾動後的背景色 */
         }
 
         nav a {
             color: #fff;
             text-decoration: none;
-            margin: 0 15px;
             font-size: 16px;
         }
 
@@ -43,6 +95,7 @@
             max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
+            height: 50vh;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -78,12 +131,21 @@
         .feature-card p {
             color: #666;
         }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
 
+        nav a:hover {
+            text-decoration: underline;
+        }
         footer {
             text-align: center;
             padding: 10px;
             background-color: #444;
             color: #fff;
+            height: 10vh;
             margin-top: 20px;
         }
 
@@ -94,52 +156,59 @@
         }
     </style>
 </head>
+
 <body>
     <header>
+        <nav id="navbar">
+            <div style="flex: 1; display: flex; align-items: center;">
+                <a href="/" style="margin-right: 20px;">首頁</a>
+                <a href="/services" style="margin-right: 20px;">服務項目</a>
+                <a href="/about" style="margin-right: 20px;">關於我們</a>
+                <a href="/contact">聯絡我們</a>
+            </div>
+            <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; margin-right: 50px;">
+                {% if login_status %}
+                <a href="/settings" style="text-decoration: none; display: flex; align-items: center;">
+                    {% if avatar %}
+                    <img src="{{ url_for('static', filename='images/avatars/' + avatar) }}" alt="使用者頭像"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff; margin-right: 10px;" />
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/avatars/default.jpg') }}" alt="使用者頭像"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; margin-right: 10px;" />
+                    {% endif %}
+                    <span style="color: #fff; font-size: 16px;">設定</span>
+                </a>
+                {% else %}
+                <a href="/login" style="color: #fff; margin-right: 15px;">登入</a>
+                <a href="/signup" style="color: #fff;">註冊</a>
+                {% endif %}
+            </div>
+        </nav>
         <h1>老人照護平台</h1>
+        <p>提供最貼心的健康與生活管理服務</p>
     </header>
-    <nav>
-        <a href="/">首頁</a>
-        <a href="/services">服務項目</a>
-        <a href="/about">關於我們</a>
-        <a href="/contact">聯絡我們</a>
-        {% if login_status %}
-            <a href="/logout">登出</a>
-        {% else %}
-            <a href="/login">登入</a>
-            <a href="/signup">註冊</a>
-        {% endif %}
-    </nav>
-    <div class="container">
-        {% if login_status %}
-            <div class="welcome">
-                <h2>歡迎回來, {{ user }}</h2>
-                <p>感謝您使用我們的服務。</p>
-            </div>
-        {% else %}
-            <div class="welcome">
-                <h2>歡迎來到祥霖照護平台</h2>
-                <p>提供最貼心的健康與生活管理服務。</p>
-            </div>
-        {% endif %}
 
-        <div class="feature">
-            <div class="feature-card">
-                <h3>健康監測</h3>
-                <p>實時監控身體狀況，提供健康建議。</p>
-            </div>
-            <div class="feature-card">
-                <h3>遠端支援</h3>
-                <p>透過務聯網技術，讓家人更安心。</p>
-            </div>
-            <div class="feature-card">
-                <h3>用戶管理</h3>
-                <p>方便的個人與家人資料管理功能。</p>
-            </div>
-        </div>
+    <div class="container">
+        <!-- 博恩你的局 -->
     </div>
     <footer>
+        
         &copy; 2024 老人照護平台. 版權所有.
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.getElementById('navbar');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) { // 如果滾動超過 50px
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
+
 </body>
+
 </html>

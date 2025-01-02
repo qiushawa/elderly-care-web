@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定 - 老人照護平台</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #dbdbdb;
+            padding: 10px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            height: 50px;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 18px;
+            color: #262626;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        nav {
+            position: fixed;
+            /* 固定在頁面頂部 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            /* 平滑過渡 */
+            z-index: 999;
+            /* 保證在其他內容之上 */
+            background-color: transparent;
+            /* 初始透明背景 */
+        }
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fafafa;
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #0095f6;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #007bb5;
+        }
+
+        .button-group button[type="reset"] {
+            background-color: #efefef;
+            color: #262626;
+        }
+
+        .button-group button[type="reset"]:hover {
+            background-color: #dbdbdb;
+        }
+
+        .avatar-preview {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid #dbdbdb;
+            object-fit: cover;
+        }
+
+        .avatar-preview input[type="file"] {
+            display: block;
+            margin: 10px auto 0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div style="flex: 1; display: flex; align-items: center;">
+            <a href="/" style="margin-right: 20px;">首頁</a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h2>編輯個人檔案</h2>
+        <form method="POST" action="/update_settings" enctype="multipart/form-data">
+            <div class="avatar-preview">
+                {% if user.avatar %}
+                <img id="avatarPreview" src="{{ url_for('static', filename='images/avatars/' + user.avatar ) }}"
+                    alt="頭像預覽" />
+                {% else %}
+                <img id="avatarPreview" src="{{ url_for('static', filename='images/avatars/default.jpg') }}"
+                    alt="頭像預覽" />
+                {% endif %}
+                <input type="file" name="avatar" id="avatar" accept="image/*" onchange="previewAvatar(event)">
+            </div>
+            <div>
+                <label for="name">名稱：</label>
+                <input type="text" name="name" id="name" value="{{ user.name }}" required>
+            </div>
+            <div>
+                <label for="email">電子郵件：</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}" required>
+            </div>
+            <!-- 按鈕組 -->
+            <div class="button-group">
+                <button type="submit">保存修改</button>
+                <button type="reset">重置</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

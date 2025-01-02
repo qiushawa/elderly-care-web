@@ -10,7 +10,7 @@ from . import setting
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
 # 創建 Flask 應用
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
 
 # 設定 session key
@@ -22,15 +22,12 @@ app.permanent_session_lifetime = setting.SESSION_EXPIRES
 # 設定資料庫連接配置
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(project_dir, 'db/app.db')}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+app.config['UPLOAD_FOLDER'] = 'app/static/images/avatars'
 # 初始化 SQLAlchemy 和 Migrate
 db = SQLAlchemy(app)  # 在這裡初始化 SQLAlchemy
 migrate = Migrate(app, db)
-with app.app_context():
-    if not os.path.exists(os.path.join(project_dir, 'db/app.db')):
-        os.system("flask db init")
-        os.system("flask db migrate")
-        os.system("flask db upgrade")
+
+
 # 配置 Flask-Session
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db

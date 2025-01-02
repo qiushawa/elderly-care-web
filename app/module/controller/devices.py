@@ -93,5 +93,11 @@ def bind_page(user):
             error_code=HttpStatus.NOT_FOUND,
             previous_page=request.referrer,
         )
-    
+    if device.owner:
+        return render_template(
+            "error.html",
+            error_message="設備已綁定",
+            error_code=HttpStatus.FORBIDDEN,
+            previous_page=request.referrer,
+        )
     return render_template("bind.html", user=user, device=device)

@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, redirect, session, request
-from app.module.controller.util import check_login
+import os
+from flask import Blueprint, flash, render_template, redirect, session, request, url_for
+from app.module.controller.util import allowed_file, check_login
 from app.module.models import Auth, Users
+from werkzeug.utils import secure_filename
+from app import app
 
 bp = Blueprint('auth', __name__, url_prefix='/')
 
@@ -83,3 +86,49 @@ def logout_page():
     session.pop('email', None)
     session.pop('username', None)
     return redirect('/')
+
+# 修改使用者資料 seeting page
+@bp.route('/settings', methods=['GET'])
+@check_login
+def setting_page(user):
+    user = Users.query.filter_by(email=user['email']).first()
+    return render_template('setting.html', user=user)
+
+def ensure_upload_folder_exists():
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+
+@bp.route('/update_settings', methods=['POST'])
+def settings():
+    if request.method == 'POST':
+        # 取得表單資料
+        name = request.form['name']
+        email = request.form['email']
+        user = Users.query.filter_by(email=email).first()
+        # 處理頭像檔案上傳
+        avatar = None
+        if 'avatar' in request.files:
+            file = request.files['avatar']
+            if file and allowed_file(file.filename):
+                # 確保檔案名安全
+                filename = secure_filename(f"{user.id}-{file.filename}")
+                avatar = filename  # 這會在後續保存檔案
+
+                # 確保上傳資料夾存在
+                ensure_upload_folder_exists()
+
+                # 儲存檔案
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # 更新資料庫
+        user.email = email
+        user.name = name
+        if avatar:
+            user.avatar = filename
+        user.save()
+
+        # 成功訊息
+        flash('設定已更新', 'success')
+        return redirect(url_for('auth.setting_page'))
+
+    return render_template('setting.html', user=user)

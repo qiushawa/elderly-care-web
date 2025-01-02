@@ -8,13 +8,14 @@ class Users(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     gender = db.Column(db.String(255), nullable=False)
     birthday = db.Column(db.String(255), nullable=False)
-
+    avatar = db.Column(db.String(255), nullable=True)
     def __init__(self, name, email, gender, birthday):
         self.name = name
         self.email = email
         self.gender = gender
         if not self.check_birthday(birthday): raise ValueError('birthday format error')
         self.birthday = birthday
+        self.avatar = None
 
     def check_birthday(self, birthday:str) -> bool:
         # 檢查生日格式 yyyy-mm-dd

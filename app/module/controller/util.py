@@ -4,6 +4,8 @@ from app.module.const import ErrResponse, HttpStatus
 from app.module.models.device import Device
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.setting import ALLOWED_EXTENSIONS
+
 def handle_exception(e, default_message="未知錯誤"):
     if isinstance(e, SQLAlchemyError):
         return ErrResponse(
@@ -41,3 +43,6 @@ def check_device(f):
         return f(*args, **kwargs)
 
     return wrapper
+# 檢查檔案是否為允許的類型
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
