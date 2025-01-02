@@ -26,8 +26,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # 初始化 SQLAlchemy 和 Migrate
 db = SQLAlchemy(app)  # 在這裡初始化 SQLAlchemy
 migrate = Migrate(app, db)
-if not os.path.exists(os.path.join(project_dir, 'db/app.db')):
-    db.create_all()
+with app.app_context():
+    if not os.path.exists(os.path.join(project_dir, 'db/app.db')):
+        db.create_all()
 # 配置 Flask-Session
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
