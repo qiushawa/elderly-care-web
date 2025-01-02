@@ -1,4 +1,4 @@
-from . import db
+from app import db
 
 class Users(db.Model):
     __tablename__ = 'users'
@@ -6,7 +6,7 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    sex = db.Column(db.String(255), nullable=False)
+    gender = db.Column(db.String(255), nullable=False)
     birthday = db.Column(db.String(255), nullable=False)
 
     def __init__(self, name, email, gender, birthday):
