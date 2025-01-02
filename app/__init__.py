@@ -28,7 +28,9 @@ db = SQLAlchemy(app)  # 在這裡初始化 SQLAlchemy
 migrate = Migrate(app, db)
 with app.app_context():
     if not os.path.exists(os.path.join(project_dir, 'db/app.db')):
-        db.create_all()
+        os.system("flask db init")
+        os.system("flask db migrate")
+        os.system("flask db upgrade")
 # 配置 Flask-Session
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db
