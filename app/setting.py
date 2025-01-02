@@ -5,15 +5,7 @@ HOST = "0.0.0.0"
 PORT = 5000
 DEBUG = True
 
-# 路由文件
-ROUTES = [
-    "app.module.controller.users",
-    "app.module.controller.devices",
-    "app.module.controller.docs",
-]
 
-
-# 資料庫設定
 
 # 儲存使用者,裝置資料的資料庫檔案
 DATABASE_USER_DEVICE = "db/user_device.db"
