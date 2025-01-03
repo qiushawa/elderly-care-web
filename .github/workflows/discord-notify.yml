@@ -15,7 +15,7 @@ jobs:
         -d '{
           "embeds": [
             {
-              "title": "nfu-csie-judge-backend",
+              "title": "eldercare",
               "description": "在分支 `${{ github.ref }}` 有新的提交",
               "url": "${{ github.event.head_commit.url }}",
               "color": 5814783,
@@ -49,7 +49,7 @@ jobs:
         -d '{
           "embeds": [
             {
-              "title": "nfu-csie-judge-backend",
+              "title": "eldercare",
               "description": "PR評論提交在分支 `${{ github.event.pull_request.head.ref }}`",
               "url": "${{ github.event.review.html_url }}",
               "color": 5814783,
