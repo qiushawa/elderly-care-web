@@ -1,0 +1,84 @@
+name: 通知 Discord 嵌入訊息
+
+on:
+  push:  # 監聽 push 事件
+  pull_request_review:  # 監聽 pull request review 事件
+
+jobs:
+  notify_push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+    - name: 發送嵌入訊息到 Discord
+      run: |
+        curl -H "Content-Type: application/json" \
+        -d '{
+          "embeds": [
+            {
+              "title": "nfu-csie-judge-backend",
+              "description": "在分支 `${{ github.ref }}` 有新的提交",
+              "url": "${{ github.event.head_commit.url }}",
+              "color": 5814783,
+              "thumbnail": {
+                "url": "https://cdn.discordapp.com/avatars/1297201290522132555/9b049559f45c85fabeffb554acc1d9b3.png?size=1024"
+              },
+              "fields": [
+                {
+                  "name": "提交訊息",
+                  "value": "```\n${{ github.event.head_commit.message }}\n```",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "提交由 ${{ github.actor }} 完成",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              },
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+          ]
+        }' \
+        ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+  notify_pr_review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_review'
+    steps:
+    - name: 發送 pull request review 訊息到 Discord
+      run: |
+        curl -H "Content-Type: application/json" \
+        -d '{
+          "embeds": [
+            {
+              "title": "nfu-csie-judge-backend",
+              "description": "PR評論提交在分支 `${{ github.event.pull_request.head.ref }}`",
+              "url": "${{ github.event.review.html_url }}",
+              "color": 5814783,
+              "thumbnail": {
+                "url": "https://cdn.discordapp.com/avatars/1297201290522132555/9b049559f45c85fabeffb554acc1d9b3.png?size=1024"
+              },
+              "fields": [
+                {
+                  "name": "審查狀態",
+                  "value": "```${{ github.event.review.state }}```",
+                  "inline": true
+                },
+                {
+                  "name": "審查者",
+                  "value": "```${{ github.event.review.user.login }}```",
+                  "inline": true
+                },
+                {
+                  "name": "評論內容",
+                  "value": "```${{ github.event.review.body }}```",
+                  "inline": false
+                }
+              ],
+              "footer": {
+                "text": "由 ${{ github.event.review.user.login }} 審查",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              },
+              "timestamp": "${{ github.event.review.submitted_at }}"
+            }
+          ]
+        }' \
+        ${{ secrets.DISCORD_WEBHOOK_URL }}
