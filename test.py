@@ -4,11 +4,11 @@ import requests
 import json
 
 def test_register_device():
-    url = "https://eldercare.qiushawa.me/device/register"
+    url = "http://localhost:3000/device/register"
     data = {
-        "id": "1234567890",
-        "name": "ESP32",
-        "type": "ESP32"
+        "id": "0987654321",
+        "name": "Max30102",
+        "type": "Max30102"
     }
     headers = {
         "Content-Type": "application/json"

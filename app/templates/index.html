@@ -171,12 +171,11 @@
                 <a href="/settings" style="text-decoration: none; display: flex; align-items: center;">
                     {% if avatar %}
                     <img src="{{ url_for('static', filename='images/avatars/' + avatar) }}" alt="使用者頭像"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff; margin-right: 10px;" />
+                        style="width: 60px; height: 60px; border-radius: 50%; border: 1px solid #fff; margin-right: 10px;" />
                     {% else %}
                     <img src="{{ url_for('static', filename='images/avatars/default.jpg') }}" alt="使用者頭像"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; margin-right: 10px;" />
+                        style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; margin-right: 10px;" />
                     {% endif %}
-                    <span style="color: #fff; font-size: 16px;">設定</span>
                 </a>
                 {% else %}
                 <a href="/login" style="color: #fff; margin-right: 15px;">登入</a>
