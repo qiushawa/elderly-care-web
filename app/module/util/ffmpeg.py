@@ -6,7 +6,7 @@ def server(stream_id, port):
 
     command = [
         "ffmpeg",
-        "-i", f"http://127.0.0.1:80/hls/{stream_id}.m3u8",
+        "-i", f"https://stream.qiushawa.me/hls/{stream_id}.m3u8",
         "-an",
         "-c:v", "mjpeg",
         "-q:v", "10",
