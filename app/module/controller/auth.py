@@ -42,7 +42,8 @@ def signup():
         name=user_data['username'],
         email=user_data['email'],
         gender=user_data['gender'],
-        birthday=user_data['birthday']
+        birthday=user_data['birthday'],
+        stream_hash= f"stream{abs(hash(user_data['email']))}"
     )
     new_user.save()
     new_auth = Auth(
@@ -85,7 +86,8 @@ def login():
         'email': user.email,
         'name': user.name,
         'gender': user.gender,
-        'birthday': user.birthday
+        'birthday': user.birthday,
+        'stream_hash': user.stream_hash
     }
     return redirect(next_page) if next_page else redirect('/')
 

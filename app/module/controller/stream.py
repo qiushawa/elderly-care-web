@@ -10,6 +10,9 @@ bp = Blueprint("stream", __name__, url_prefix="/stream")
 @bp.route("/add_stream/<stream_id>", methods=["POST"])
 def add_stream(stream_id):
     """新增一個串流"""
+    user = Users.query.filter_by(stream_hash=stream_id).first()
+    if not user:
+        return jsonify({"message": "Stream not found"}), 404
     message, status = manager.add_stream(stream_id, tcp.server, ffmpeg.server)
     return jsonify({"message": message}), status
 
@@ -17,6 +20,9 @@ def add_stream(stream_id):
 @bp.route("/remove_stream/<stream_id>", methods=["DELETE"])
 def remove_stream(stream_id):
     """移除一個串流"""
+    user = Users.query.filter_by(stream_hash=stream_id).first()
+    if not user:
+        return jsonify({"message": "Stream not found"}), 404
     message, status = manager.remove_stream(stream_id)
     return jsonify({"message": message}), status
 
@@ -24,7 +30,13 @@ def remove_stream(stream_id):
 @bp.route("/video_feed/<stream_id>")
 def video_feed(stream_id):
     """提供指定 stream_id 的串流"""
-
+    user = session.get("user")
+    if not user:
+        return jsonify({"message": "Unauthorized"}), 401
+    if user["stream_hash"] != stream_id:
+        return jsonify({"message": "Forbidden"}), 403
+    
+    
     def generate():
         while True:
             frame = state.get_stream(stream_id)
@@ -45,8 +57,8 @@ def video_feed(stream_id):
 
 
 # stream page
-@bp.route("/stream")
+@bp.route("/")
 @validators.check_login
 def stream_page(user):
     """串流頁面"""
-    return render_template("stream.html", id=user["id"])
+    return render_template("stream.html", id=user["stream_hash"])
