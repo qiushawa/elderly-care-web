@@ -1,0 +1,39 @@
+from flask import Blueprint, render_template, request
+from app.module.models.device import Device
+from app.module.models.physiological.blood_oxygen import BloodOxygen
+from app.module.models.physiological.heart_rate import HeartRate
+from app.module.util import validators
+from app.module import const
+bp = Blueprint("physio", __name__, url_prefix="/physio")
+
+@bp.route("/", methods=["GET"])
+@validators.check_login
+def physio_page(user):
+    return render_template('physio.html', user=user)
+
+# 上傳生理資料
+@bp.route("/upload", methods=["POST"])
+@validators.check_device
+def upload_physio():
+
+    try:
+        # 從請求中取得設備 ID
+        id = request.args.get("id")
+        device:Device = Device.query.filter_by(id=id).first()
+        if not device:
+            return const.ErrResponse("設備不存在", const.HttpStatus.NOT_FOUND).response
+        data = request.json
+        # 處理生理資料的上傳
+        if data["type"] == "blood_oxygen":
+            blood_oxygen_data = BloodOxygen(id, device.owner, data["value"])
+            blood_oxygen_data.save()
+            return const.SuccessResponse("血氧資料上傳成功", None, const.HttpStatus.CREATED).response
+        elif data["type"] == "heart_rate":
+            heart_rate_data = HeartRate(id, device.owner, data["value"])
+            heart_rate_data.save()
+            return const.SuccessResponse("心率資料上傳成功", None, const.HttpStatus.CREATED).response
+        else:
+            return const.ErrResponse("未知的生理資料類型", const.HttpStatus.BAD_REQUEST).response
+    except Exception as e:
+        # 處理例外並返回適當的錯誤回應
+        return validators.handle_exception(e)

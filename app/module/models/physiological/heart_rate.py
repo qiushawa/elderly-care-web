@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 
 class HeartRate(db.Model):
@@ -20,15 +21,15 @@ class HeartRate(db.Model):
     
     id = db.Column(db.Integer, primary_key=True) # 資料編號 (唯一)
     device_id = db.Column(db.String(255), nullable=False) # 裝置編號
-    user_id = db.Column(db.String(255), nullable=False) # 使用者編號
+    email = db.Column(db.String(255), nullable=False) # 使用者編號
     value = db.Column(db.Float, nullable=False) # 心率值
     timestamp = db.Column(db.DateTime, nullable=False) # 資料時間
     
-    def __init__(self, device_id, user_id, value, timestamp):
+    def __init__(self, device_id, email, value):
         self.device_id = device_id
-        self.user_id = user_id
+        self.email = email
         self.value = value
-        self.timestamp = timestamp
+        self.timestamp = datetime.now()
     
     def save(self):
         db.session.add(self)
