@@ -14,7 +14,10 @@ def add_stream(device_id):
     device_owner:Users = Users.query.filter_by(email=device.owner).first()
     stream_id = device_owner.stream_hash
     message, status = manager.add_stream(stream_id, tcp.server, ffmpeg.server)
-    return jsonify({"message": message}), status
+    return jsonify({
+        "message": message,
+        "stream_id": stream_id
+    }), status
 
 
 @bp.route("/remove_stream/<device_id>", methods=["DELETE"])
