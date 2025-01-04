@@ -35,7 +35,8 @@ jobs:
               },
               "timestamp": "${{ github.event.head_commit.timestamp }}"
             }
-          ]
+          ],
+          "content": "@everyone"
         }' \
         ${{ secrets.DISCORD_WEBHOOK_URL }}
 
@@ -79,6 +80,7 @@ jobs:
               },
               "timestamp": "${{ github.event.review.submitted_at }}"
             }
-          ]
+          ],
+          "content": "@everyone"
         }' \
         ${{ secrets.DISCORD_WEBHOOK_URL }}
