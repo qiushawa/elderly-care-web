@@ -1,28 +1,28 @@
 from flask import Blueprint, Response, jsonify, render_template
 from flask import session
-from app.module.models import Users
+from app.module.models import Users, Device
 from app import manager, state
 from app.module.util import ffmpeg, tcp, validators
 
 bp = Blueprint("stream", __name__, url_prefix="/stream")
 
 
-@bp.route("/add_stream/<stream_id>", methods=["POST"])
-def add_stream(stream_id):
+@bp.route("/add_stream/<device_id>", methods=["POST"])
+def add_stream(device_id):
     """新增一個串流"""
-    user = Users.query.filter_by(stream_hash=stream_id).first()
-    if not user:
-        return jsonify({"message": "Stream not found"}), 404
+    device:Device = Device.query.filter_by(id=device_id).first()
+    device_owner:Users = Users.query.filter_by(email=device.owner).first()
+    stream_id = device_owner.stream_hash
     message, status = manager.add_stream(stream_id, tcp.server, ffmpeg.server)
     return jsonify({"message": message}), status
 
 
-@bp.route("/remove_stream/<stream_id>", methods=["DELETE"])
-def remove_stream(stream_id):
+@bp.route("/remove_stream/<device_id>", methods=["DELETE"])
+def remove_stream(device_id):
     """移除一個串流"""
-    user = Users.query.filter_by(stream_hash=stream_id).first()
-    if not user:
-        return jsonify({"message": "Stream not found"}), 404
+    device:Device = Device.query.filter_by(id=device_id).first()
+    device_owner:Users = Users.query.filter_by(email=device.owner).first()
+    stream_id = device_owner.stream_hash
     message, status = manager.remove_stream(stream_id)
     return jsonify({"message": message}), status
 
