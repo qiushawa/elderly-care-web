@@ -37,6 +37,7 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from app.module.util.stream_manager import StreamManager, StreamState
 from app.setting import AppSetting
 
 # 初始化 Flask 應用程式，並設定靜態檔案資料夾
@@ -56,6 +57,10 @@ app.permanent_session_lifetime = app.config["SESSION_EXPIRES"]  # 設定會話�
 # 初始化資料庫及遷移工具
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# 初始化串流管理器
+state:StreamState= StreamState()
+manager:StreamManager = StreamManager(state)
 
 # 全局錯誤處理：404 錯誤（頁面未找到）
 @app.errorhandler(404)

@@ -30,12 +30,7 @@ def check_login(f):
     def wrapper(*args, **kwargs):
         # 嘗試從遺忘的空間中尋找使用者的靈魂
         user = session.get("user")
-        if not user:
-            # 引導無法辨認的靈魂到登入頁面，等待審判
-            return redirect("/login?next=" + request.url)
-        # 通過審判後，允許靈魂繼續前進
-        return f(user)
-
+        return f(user) if user else redirect(f"/login?next={request.url}")
     return wrapper
 
 
@@ -65,3 +60,4 @@ def check_device(f):
 def allowed_file(filename):
     # 只接受那些符合條件的檔案，其他的則會被拒之門外，仿若亡靈無法穿越聖域
     return "." in filename and filename.rsplit(".", 1)[1].lower() in AppSetting.ALLOWED_EXTENSIONS
+

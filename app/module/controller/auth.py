@@ -6,7 +6,7 @@
 
 import os
 from flask import Blueprint, flash, render_template, redirect, session, request, url_for
-from app.module.controller.util import allowed_file, check_login
+from app.module.util.validators import allowed_file, check_login
 from app.module.models import Auth, Users
 from werkzeug.utils import secure_filename
 from app import app
@@ -61,8 +61,7 @@ def login_page():
     """
     if session.get('user'):
         return redirect('/')
-    next_page = request.args.get('next')
-    if next_page:
+    if next_page := request.args.get('next'):
         return render_template('login.html', next=next_page)
     return render_template('login.html')
 
@@ -88,9 +87,7 @@ def login():
         'gender': user.gender,
         'birthday': user.birthday
     }
-    if next_page:
-        return redirect(next_page)
-    return redirect('/')
+    return redirect(next_page) if next_page else redirect('/')
 
 # 登出
 @bp.route('/logout', methods=['GET'])
@@ -131,24 +128,24 @@ def settings():
     功能: 處理使用者更新資料的表單提交，包含檔案上傳處理。
     回傳值: 成功重定向至設定頁面，失敗渲染設定頁面。
     """
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        user = Users.query.filter_by(email=email).first()
-        avatar = None
-        if 'avatar' in request.files:
-            file = request.files['avatar']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"{user.id}-{file.filename}")
-                avatar = filename
-                ensure_upload_folder_exists()
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    if request.method != 'POST':
+        return render_template('setting.html', user=user)
+    name = request.form['name']
+    email = request.form['email']
+    user = Users.query.filter_by(email=email).first()
+    avatar = None
+    if 'avatar' in request.files:
+        file = request.files['avatar']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(f"{user.id}-{file.filename}")
+            avatar = filename
+            ensure_upload_folder_exists()
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        user.email = email
-        user.name = name
-        if avatar:
-            user.avatar = filename
-        user.save()
-        flash('設定已更新', 'success')
-        return redirect(url_for('auth.setting_page'))
-    return render_template('setting.html', user=user)
+    user.email = email
+    user.name = name
+    if avatar:
+        user.avatar = filename
+    user.save()
+    flash('設定已更新', 'success')
+    return redirect(url_for('auth.setting_page'))

@@ -1,3 +1,6 @@
+# The `AppSetting` class centralizes and manages various configuration parameters for an application,
+# including project directory, server settings, file upload configurations, database settings, session
+# management, and file upload directory.
 import os
 from datetime import timedelta
 
@@ -10,6 +13,10 @@ class AppSetting:
         HOST (str): 伺服器綁定的主機地址，預設為 "0.0.0.0"。
         PORT (int): 伺服器埠號，預設為 3000。
         DEBUG (bool): 是否啟用調試模式，預設為 True。
+        # The `ALLOWED_EXTENSIONS` attribute in the `AppSetting` class is defining a set that contains
+        # the file extensions that are allowed for file uploads in the application. In this case, the
+        # allowed file extensions are 'png', 'jpg', 'jpeg', and 'gif'. This set restricts the types of
+        # files that can be uploaded to only those with these specified extensions.
         ALLOWED_EXTENSIONS (set): 允許上傳的檔案副檔名集合。
         SQLALCHEMY_DATABASE_URI (str): SQLite 資料庫的連接 URI。
         SQLALCHEMY_TRACK_MODIFICATIONS (bool): 是否啟用資料庫的變更追蹤，預設為 False。
