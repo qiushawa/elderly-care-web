@@ -1,11 +1,8 @@
 import threading
 import subprocess
+import time
 
-# 全域變數
-streams = {}
-stream_locks = {}
-stream_threads = {}
-BASE_TCP_PORT = 8011  # 基礎埠號
+
 class StreamState:
     """管理全域變數的狀態"""
 
@@ -38,7 +35,13 @@ class StreamState:
     def set_ffmpeg_thread(self, stream_id, thread):
         """設置 FFmpeg 線程"""
         self.ffmpeg_threads[stream_id] = thread
+    def get_stream(self, stream_id):
+        """返回指定 stream_id 的影像數據"""
+        return self.streams.get(stream_id, None)
 
+    def get_lock(self, stream_id):
+        """返回指定 stream_id 的線程鎖"""
+        return self.stream_locks.get(stream_id, None)
 class StreamManager:
     """動態管理串流來源"""
 
@@ -56,12 +59,19 @@ class StreamManager:
         port = self.next_port
         self.next_port += 1
 
-        # 啟動 TCP 伺服器執行緒
-        tcp_thread = threading.Thread(target=tcp_server_function, args=(stream_id, port, self.state), daemon=True)
+        tcp_thread = threading.Thread(
+            target=tcp_server_function,
+            args=(stream_id, port, self.state.streams, self.state.stream_locks),
+            daemon=True
+        )
         tcp_thread.start()
         self.state.set_tcp_thread(stream_id, tcp_thread)
-
         # 啟動 FFmpeg 執行緒
+        # 等待 TCP 串流線程啟動
+        time.sleep(5)
+        if not tcp_thread.is_alive():
+            return "TCP server failed to start.", 500
+        
         ffmpeg_thread = threading.Thread(target=ffmpeg_server_function, args=(stream_id, port), daemon=True)
         ffmpeg_thread.start()
         self.state.set_ffmpeg_thread(stream_id, ffmpeg_thread)
