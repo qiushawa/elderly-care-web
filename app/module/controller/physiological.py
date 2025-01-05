@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 from app.module.models.device import Device
+from app.module.models.users import Users
 from app.module.models.physiological.blood_oxygen import BloodOxygen
 from app.module.models.physiological.heart_rate import HeartRate
 from app.module.util import validators
@@ -37,3 +38,26 @@ def upload_physio():
     except Exception as e:
         # 處理例外並返回適當的錯誤回應
         return validators.handle_exception(e)
+
+@bp.route("/get_physio", methods=["GET"])
+@validators.check_device
+def get_physio():
+    user = session.get("user")
+    if not user:
+        return const.ErrResponse("使用者未登入", const.HttpStatus.UNAUTHORIZED).response
+    # 顯示幾筆資料
+    limit = request.args.get("limit")
+    try:
+        user = Users.query.filter_by(id=user['id']).first()
+        if not user:
+            return const.ErrResponse("使用者不存在", const.HttpStatus.NOT_FOUND).response
+        # 取得生理資料
+        blood_oxygen_data = BloodOxygen.query.filter_by(email=user.email).order_by(BloodOxygen.timestamp.desc()).limit(limit).all()
+        heart_rate_data = HeartRate.query.filter_by(email=user.email).order_by(HeartRate.timestamp.desc()).limit(limit).all()
+        return const.SuccessResponse("生理資料取得成功", {
+            "blood_oxygen": [data.serialize() for data in blood_oxygen_data],
+            "heart_rate": [data.serialize() for data in heart_rate_data]
+        }).response
+    except Exception as e:
+        return validators.handle_exception(e)
+    

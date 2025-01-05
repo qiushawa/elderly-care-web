@@ -83,6 +83,7 @@ def login():
     
     user = Users.query.filter_by(email=user_data['email']).first()
     session['user'] = {
+        'id': user.id,
         'email': user.email,
         'name': user.name,
         'gender': user.gender,
