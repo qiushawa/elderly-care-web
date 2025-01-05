@@ -16,7 +16,7 @@
         }
 
         header {
-            height: 75vh;
+            height: 90vh;
             /* 滿一頁高 */
             position: relative;
             /* 為了定位 ::before */
@@ -154,6 +154,18 @@
                 width: 100%;
             }
         }
+        .btn {
+            padding: 12px 24px;
+            font-size: 18px;
+            color: #fff;
+            background: linear-gradient(45deg, #7e7979, #adadad);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -184,14 +196,10 @@
             </div>
         </nav>
         <h1>老人照護平台</h1>
-        <p>提供最貼心的健康與生活管理服務</p>
+        <p>提供最貼心的健康與生活管理服務</p>  
+        <a href="physio" class="btn">開始使用</a>
     </header>
-
-    <div class="container">
-        <!-- 博恩你的局 -->
-    </div>
-    <footer>
-        
+    <footer>       
         &copy; 2024 老人照護平台. 版權所有.
     </footer>
     <script>
@@ -207,7 +215,6 @@
             });
         });
     </script>
-
 </body>
 
 </html>
