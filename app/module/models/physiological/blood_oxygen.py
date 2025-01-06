@@ -37,6 +37,13 @@ class BloodOxygen(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    def serialize(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'value': self.value,
+            'timestamp': self.timestamp.isoformat()
+        }
     
     def __repr__(self):
         return f'<BloodOxygen {self.value}>'
