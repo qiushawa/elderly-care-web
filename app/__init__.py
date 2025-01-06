@@ -44,7 +44,7 @@ from app.setting import AppSetting
 app = Flask(__name__, static_folder="static")
 
 # 啟用 CORS，允許跨來源請求
-CORS(app)
+CORS(app, supports_credentials=True)
 
 
 for key in dir(AppSetting):
