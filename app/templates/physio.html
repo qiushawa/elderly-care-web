@@ -3,9 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Physiological Data Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            color: #333;
+        }
+
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            color: #fff;
+            background: linear-gradient(45deg, #7e7979, #adadad);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .back-home:hover {
+            background-color: #0056b3;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chart-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #oxygenChart {
+            width: 100%;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .video-section {
+            background-color: #1e2a47;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        img {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <!-- 博恩你的局 -->
+    <a href="/" class="back-home">回首頁</a>
+    <div class="app">
+        <h1>Physiological Data Dashboard</h1>
+        <div class="chart-container">
+            <canvas id="oxygenChart"></canvas>
+        </div>
+        <div class="container">
+            <div class="video-section">
+                <h2>即時畫面</h2>
+                <img id="video-feed" src="/stream/video_feed/{{id}}" alt="影像畫面">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById("oxygenChart").getContext("2d");
+            let oxygenChartInstance;
+
+            function initializeChart(labels, values) {
+                oxygenChartInstance = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "心率",
+                            data: values,
+                            borderColor: "rgba(75, 192, 192, 1)",
+                            backgroundColor: "rgba(75, 192, 192, 0.2)",
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "top",
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "最新的資訊",
+                                },
+                                ticks: {
+                                    autoSkip: true,
+                                    maxTicksLimit: 10,
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "心率(BPM)",
+                                },
+                                min: 30,
+                                max: 100,
+                            },
+                        },
+                    },
+                });
+            }
+
+            function checkFirstHeartRate(value) {
+                if (value < 60) {
+                    alert("心率過慢！");
+                }
+            }
+
+            function fetchDataAndUpdateChart() {
+                const request = new XMLHttpRequest();
+                request.withCredentials = true;
+
+                const url = new URL("http://127.0.0.1:3000/physio/get_physio?limit=10&id=0987654321");
+                request.open("GET", url.toString(), true);
+
+                request.onload = function () {
+                    if (request.status >= 200 && request.status < 400) {
+                        const response = request.responseText;
+                        const json = JSON.parse(response);
+                        const user = json.data;
+
+                        if (user && user.heart_rate) {
+                            const heart_rateData = user.heart_rate;
+                            const limitedData = heart_rateData.slice();
+
+                            const labels = limitedData.map((entry, index) => `第 ${index + 1} 筆`);
+                            const values = limitedData.map((entry) => entry.value);
+
+                            // 檢查第一筆心率數據
+                            if (values.length > 0) {
+                                checkFirstHeartRate(values[0]);
+                            }
+
+                            if (oxygenChartInstance) {
+                                oxygenChartInstance.data.labels = labels;
+                                oxygenChartInstance.data.datasets[0].data = values;
+                                oxygenChartInstance.update(); // 更新圖表
+                            } else {
+                                initializeChart(labels, values); // 初始化圖表
+                            }
+                        }
+                    }
+                }
+                request.send();
+            }
+
+            // Initial fetch and update
+            fetchDataAndUpdateChart();
+
+            // Fetch and update every 5 seconds
+            setInterval(fetchDataAndUpdateChart, 5000);
+        });
+    </script>
 </body>
 </html>

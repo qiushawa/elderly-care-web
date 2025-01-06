@@ -10,7 +10,7 @@ bp = Blueprint("physio", __name__, url_prefix="/physio")
 @bp.route("/", methods=["GET"])
 @validators.check_login
 def physio_page(user):
-    return render_template('physio.html', user=user)
+    return render_template('physio.html', user=user,id=user["stream_hash"])
 
 # 上傳生理資料
 @bp.route("/upload", methods=["POST"])
