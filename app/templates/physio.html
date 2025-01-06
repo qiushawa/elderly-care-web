@@ -161,7 +161,7 @@
                 const request = new XMLHttpRequest();
                 request.withCredentials = true;
 
-                const url = new URL("http://127.0.0.1:3000/physio/get_physio?limit=10&id=0987654321");
+                const url = new URL("http://127.0.0.1:3000/physio/get_physio?limit=10&id=1234567890");
                 request.open("GET", url.toString(), true);
 
                 request.onload = function () {
@@ -185,20 +185,16 @@
                             if (oxygenChartInstance) {
                                 oxygenChartInstance.data.labels = labels;
                                 oxygenChartInstance.data.datasets[0].data = values;
-                                oxygenChartInstance.update(); // 更新圖表
+                                oxygenChartInstance.update();
                             } else {
-                                initializeChart(labels, values); // 初始化圖表
+                                initializeChart(labels, values);
                             }
                         }
                     }
                 }
                 request.send();
             }
-
-            // Initial fetch and update
             fetchDataAndUpdateChart();
-
-            // Fetch and update every 5 seconds
             setInterval(fetchDataAndUpdateChart, 5000);
         });
     </script>
