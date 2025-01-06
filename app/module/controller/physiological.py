@@ -45,6 +45,7 @@ def get_physio():
     user = session.get("user")
     if not user:
         return const.ErrResponse("使用者未登入", const.HttpStatus.UNAUTHORIZED).response
+    
     # 顯示幾筆資料
     limit = request.args.get("limit")
     try:
@@ -54,10 +55,13 @@ def get_physio():
         # 取得生理資料
         blood_oxygen_data = BloodOxygen.query.filter_by(email=user.email).order_by(BloodOxygen.timestamp.desc()).limit(limit).all()
         heart_rate_data = HeartRate.query.filter_by(email=user.email).order_by(HeartRate.timestamp.desc()).limit(limit).all()
-        return const.SuccessResponse("生理資料取得成功", {
-            "blood_oxygen": [data.serialize() for data in blood_oxygen_data],
-            "heart_rate": [data.serialize() for data in heart_rate_data]
-        }).response
+        return const.SuccessResponse("生理資料取得成功", 
+            {
+                "blood_oxygen": [data.serialize() for data in blood_oxygen_data],
+                "heart_rate": [data.serialize() for data in heart_rate_data]
+            },
+            const.HttpStatus.OK
+            ).response
     except Exception as e:
         return validators.handle_exception(e)
     
